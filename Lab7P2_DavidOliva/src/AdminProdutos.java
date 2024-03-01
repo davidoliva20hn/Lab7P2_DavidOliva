@@ -1,10 +1,12 @@
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javax.swing.JOptionPane;
 
 /*
  */
@@ -16,9 +18,6 @@ import java.util.Scanner;
 public class AdminProdutos {
     private ArrayList<Producto> listaUsuarios = new ArrayList();
     private File archivo = null;
-    
-    public AdminProdutos() {
-    }
     
     public AdminProdutos(String Path) {
         archivo = new File(Path);
@@ -53,12 +52,12 @@ public class AdminProdutos {
             fw = new FileWriter(archivo, false);
             bw = new BufferedWriter(fw);
             for (Producto t : listaUsuarios) {
-                bw.write(t.getId() + ";");
-                bw.write(t.getName() + ";");
-                bw.write(t.getCategory() + ";");
-                bw.write(t.getPrice() + ";");
-                bw.write(t.getAisle() + ";");
-                bw.write(t.getBin() + ";");
+                bw.write(t.getId() + ",");
+                bw.write(t.getName() + ",");
+                bw.write(t.getCategory() + ",");
+                bw.write(t.getPrice() + ",");
+                bw.write(t.getAisle() + ",");
+                bw.write(t.getBin());
             }
             bw.flush();
         } catch (Exception ex) {
@@ -73,13 +72,16 @@ public class AdminProdutos {
         if (archivo.exists()) {
             try {
                 sc = new Scanner(archivo);
-                sc.useDelimiter(";");
+                sc.useDelimiter(",");
                 while (sc.hasNext()) {
-                    listaUsuarios.add(new Producto(sc.nextInt(), sc.nextLine(), sc.nextInt(), sc.nextDouble(), sc.nextInt(), sc.nextInt()));
+                     System.out.println("hola");
+                    listaUsuarios.add(new Producto(sc.nextInt(), sc.next(), sc.nextInt(), sc.nextDouble(), sc.nextInt(), sc.nextInt()));   
                 }
-            } catch (Exception ex) {
+            } catch (FileNotFoundException ex) {
             }
             sc.close();
-        }//FIN IF
+        } else {
+            JOptionPane.showMessageDialog(null, "Ruta Incorrecta");
+        }
     }
 }
