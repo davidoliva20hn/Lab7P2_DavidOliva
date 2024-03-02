@@ -10,15 +10,15 @@ import javax.swing.JOptionPane;
 
 /*
  */
-
 /**
  *
  * @author DAVIDANDRESOLIVAHERN
  */
 public class AdminProdutos {
+
     private ArrayList<Producto> listaUsuarios = new ArrayList();
     private File archivo = null;
-    
+
     public AdminProdutos(String Path) {
         archivo = new File(Path);
     }
@@ -26,19 +26,19 @@ public class AdminProdutos {
     public ArrayList<Producto> getListaUsuarios() {
         return listaUsuarios;
     }
-    
+
     public void setListaUsuarios(ArrayList<Producto> listaUsuarios) {
         this.listaUsuarios = listaUsuarios;
     }
-    
+
     public File getArchivo() {
         return archivo;
     }
-    
+
     public void setArchivo(File archivo) {
         this.archivo = archivo;
     }
-    
+
     @Override
     public String toString() {
         return "listaUsuarios:" + listaUsuarios;
@@ -65,7 +65,7 @@ public class AdminProdutos {
         bw.close();
         fw.close();
     }
-    
+
     public void cargarArchivo() {
         Scanner sc = null;
         listaUsuarios = new ArrayList();
@@ -74,8 +74,7 @@ public class AdminProdutos {
                 sc = new Scanner(archivo);
                 sc.useDelimiter(",");
                 while (sc.hasNext()) {
-                     System.out.println("hola");
-                    listaUsuarios.add(new Producto(sc.nextInt(), sc.next(), sc.nextInt(), sc.nextDouble(), sc.nextInt(), sc.nextInt()));   
+                    listaUsuarios.add(new Producto(sc.nextInt(), sc.next(), sc.nextInt(), sc.nextDouble(), sc.nextInt(), sc.nextInt()));
                 }
             } catch (FileNotFoundException ex) {
             }
