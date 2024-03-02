@@ -12,6 +12,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
@@ -64,7 +65,7 @@ public class Principal extends javax.swing.JFrame {
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
 
-        ClearTable.setText("jMenuItem1");
+        ClearTable.setText("Clear Table");
         ClearTable.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ClearTableActionPerformed(evt);
@@ -181,9 +182,19 @@ public class Principal extends javax.swing.JFrame {
         jMenu3.setText("Help");
 
         jMenuItem6.setText("Product Structure");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem6);
 
         jMenuItem7.setText("Commands");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem7);
 
         jMenuBar1.add(jMenu3);
@@ -240,19 +251,26 @@ public class Principal extends javax.swing.JFrame {
     private void LlenarTablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LlenarTablaMouseClicked
         String n;
         if (jTextField1.getText().contains("./load")) {
-            n = jTextField1.getText().replaceAll("Simula ./load", "");
+            n = jTextField1.getText().replaceAll("./load ", "");
             AbrirArchivo2(n);
         } else if (jTextField1.getText().contains("./clear")) {
             DefaultTableModel modelo = (DefaultTableModel) TablaProducto.getModel();
             modelo.setRowCount(0);
+            modelo.setRowCount(20);
             TablaProducto.setModel(modelo);
+        } else if (jTextField1.getText().contains("./create")&&jTextField1.getText().contains("-single")) {
+            n = jTextField1.getText().replaceAll("./create ", "");
+            n=n.replaceAll(" -single", "");
+            CrearArchivo2(n);
         }
+        
     }//GEN-LAST:event_LlenarTablaMouseClicked
 
     private void LimpiarTablaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LimpiarTablaActionPerformed
-    DefaultTableModel modelo = (DefaultTableModel) TablaProducto.getModel();
-    modelo.setRowCount(0);
-    TablaProducto.setModel(modelo);
+        DefaultTableModel modelo = (DefaultTableModel) TablaProducto.getModel();
+        modelo.setRowCount(0);
+        modelo.setRowCount(20);
+        TablaProducto.setModel(modelo);
     }//GEN-LAST:event_LimpiarTablaActionPerformed
 
     private void LimpiarTablaMenuKeyPressed(javax.swing.event.MenuKeyEvent evt) {//GEN-FIRST:event_LimpiarTablaMenuKeyPressed
@@ -269,15 +287,27 @@ public class Principal extends javax.swing.JFrame {
 
     private void TablaProductoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TablaProductoMouseClicked
         if (evt.getButton() == 3) {
-            POPlista.show(this, evt.getX(), evt.getY());
+            POPlista.show(TablaProducto, evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_TablaProductoMouseClicked
 
     private void ClearTableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ClearTableActionPerformed
         DefaultTableModel modelo = (DefaultTableModel) TablaProducto.getModel();
         modelo.setRowCount(0);
+        modelo.setRowCount(20);
         TablaProducto.setModel(modelo);
     }//GEN-LAST:event_ClearTableActionPerformed
+
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        JOptionPane.showMessageDialog(this, "• Cargar la tabla: ./load data.txt\n"
+                + "• Crear archivos: ./create archivo.txt -single\n"
+                + "• Limpiar la tabla: ./clear\n"
+                + "• Cargar los árboles: ./refresh");
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        JOptionPane.showMessageDialog(this, "Este es un gestor de productos que tiene una tabla donde se pude carga archivos y crear también y además tiene un navegador de archivos al lado donde podrá ver sus archivos o otros.");
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -343,7 +373,6 @@ public class Principal extends javax.swing.JFrame {
         modelo.setRowCount(0);
         File fichero = null;
         BufferedReader br = null;
-
         try {
             JFileChooser jfc = new JFileChooser("./");
             FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos de Texto", "txt");
@@ -453,6 +482,55 @@ public class Principal extends javax.swing.JFrame {
                     }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void CrearArchivo2(String Path) {
+        DefaultTableModel modelo = (DefaultTableModel) TablaProducto.getModel();
+        int filas = modelo.getRowCount();
+        int columnas = modelo.getColumnCount();
+        File fichero = null;
+        FileWriter fw = null;
+        BufferedWriter bw = null;
+        try {
+            fichero = new File(Path);
+            try {
+                fw = new FileWriter(fichero);
+                bw = new BufferedWriter(fw);
+                for (int fila = 0; fila < filas; fila++) {
+                    for (int columna = 0; columna < columnas; columna++) {
+                        Object valor = modelo.getValueAt(fila, columna);
+                        if (valor != null) {
+                            bw.write(String.valueOf(valor));
+                            if (columna < columnas - 1) {
+                                bw.write(",");
+                            }
+                        }
+                    }
+                    bw.newLine();
+                }
+                bw.flush();
+            } catch (IOException ex) {
+                ex.printStackTrace(); // Mejor manejo de excepciones
+            } finally {
+                if (bw != null) {
+                    try {
+                        bw.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                if (fw != null) {
+                    try {
+                        fw.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
